@@ -26,7 +26,7 @@ ts_ms = 1
 dt = ts_ms/1000.0
 
 n_part = 30
-max_iter = 15
+max_iter = 30
 lim = [(0.01, 100.0),    # kp: ganho proporcional
        (0.0, 50.0),      # ki: ganho integral  
        (0.0, 10.0)]      # kd: ganho derivativo
