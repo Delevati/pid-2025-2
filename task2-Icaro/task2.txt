@@ -14,3 +14,14 @@ Task 2 – Otimização de Controlador - Prof. Ícaro
 Ficamos com meta-heuristica Particle Swarm Optimization (PSO) - (Enxame de partícula), 
 para identificar quais os melhores paramêtros para kp, ki e kd. 
 
+
+
+# para saída
+
+2.5.3 Saída do sistema em malha fechada com controlador sintonizado
+Método dos poliedros flexíveis:
+- Degrau (Amplitude ou valor);
+- Onda senoidal (Período, amplitude e offset);
+- Onda quadrada (Período, amplitude e offset);
+- Onda dente de serra (Período, amplitude e offset);
+- Sinal aleatório (amplitude máxima, amplitude mínima, período máximo, período mínimo);

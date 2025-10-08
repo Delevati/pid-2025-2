@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.integrate import odeint
 import random
+from utils import simular_sistema_malha_fechada, visualizar_resultados
+
 
 """
 Sistema de Controle PID com Otimização para k_p, k_i e k_d por Enxame de Partículas (PSO)
@@ -12,6 +14,7 @@ Nota: A função objetivo atualmente tá implementada com a saída ITA (Integral
 e ITE (Integral Time Error), não usei Goodhart porque já tava com essas métricas prontas na função. 
 TO DO: Precisa trocar ITA e ITE para aplicar o goodhart aqui.
 """
+save_dir = '/Users/luryand/Documents/PID2024-2/codes/otimizacao/plots'
 
 a = 0.05
 k = 2.0
@@ -23,7 +26,7 @@ ts_ms = 1
 dt = ts_ms/1000.0
 
 n_part = 30
-max_iter = 50
+max_iter = 15
 lim = [(0.01, 100.0),    # kp: ganho proporcional
        (0.0, 50.0),      # ki: ganho integral  
        (0.0, 10.0)]      # kd: ganho derivativo
@@ -76,8 +79,8 @@ def calcular_funcao_objetivo(kp, ki, kd):
 
     for i in range(n-1):
         t_span = [time_vector[i], time_vector[i+1]]
-        noise = np.random.normal(0, 0.01)
-        tau = states[i, 0] + noise
+        # noise = np.random.normal(0, 0.01)
+        tau = states[i, 0]
         tau_ref_i = torque_ref[i]
         taup_ref_i = torquep_ref[i]
         erro_atual = tau_ref_i - tau
@@ -94,28 +97,36 @@ def calcular_funcao_objetivo(kp, ki, kd):
     
     tau = states[:, 0]
     erro = torque_ref - tau
-    ita = np.trapz(np.abs(erro), time_vector)
+
+    time_weighted_error = np.abs(erro) * time_vector
+    ita = np.trapz(time_weighted_error, time_vector)
+
     steady_state_start = int(0.9 * n)
     esa = np.mean(np.abs(erro[steady_state_start:]))
-    # Penalizações da FO
+
+    erro_dinamico = np.mean(np.abs(erro[:steady_state_start]))
+    
+    # Penalizações da FObjetivo
     balance_penalty = 0
     # Penaliza kp muito baixo em relação ao ki
     if kp < ki * 0.2:
         balance_penalty += (ki * 0.2 - kp) * 0.01
     # Penaliza ki muito alto, é chamado de windup
     if ki > 50:
-        balance_penalty += (ki - 50) * 0.005
+        balance_penalty += (ki - 50) * 0.05
     # Penaliza kd muito baixo (PID sem derivativo)
-    if kd < 0.5:
-        balance_penalty += (0.5 - kd) * 0.05
+    if kd < 1.0:
+        balance_penalty += (1.0 - kd) * 3.0
     # Penaliza kp, ki, kd altos
     balance_penalty += max(0, kp - 80) * 0.05
     balance_penalty += max(0, ki - 40) * 0.05
     balance_penalty += max(0, kd - 8) * 0.05
 
     effort_penalty = control_effort * 0.01
+    
+    # Modifica a função objetivo final
+    j = 0.5*ita + 5.0*esa + 2.0*erro_dinamico
 
-    j = 1.0*ita + 10.0*esa
     return j + balance_penalty + effort_penalty
 
 """
@@ -187,8 +198,37 @@ for it in range(max_iter):
                 particles[i] = [random.uniform(lim[j][0],lim[j][1]) for j in range(3)]
                 velocity[i] = [random.uniform(-veloc_max[j],veloc_max[j]) for j in range(3)]
 
-
-    if it % 5 == 0:
-        print(f"Iter {it}: {gbest_fit:.10f}")
-
 print("Final:", gbest, gbest_fit)
+print(f"Parâmetros do controlador PID: kp={gbest[0]:.3f}, ki={gbest[1]:.3f}, kd={gbest[2]:.3f}")
+
+tf_simulacao = 5.0
+
+# Sinal degrau
+parametros_degrau = {'amplitude': 1.0}
+tempo, ref, saida, controle = simular_sistema_malha_fechada(
+    connected_systems_model, gbest[0], gbest[1], gbest[2], 'degrau', parametros_degrau, a, k, ts_ms, tf_simulacao, dt)
+visualizar_resultados(tempo, ref, saida, controle, 'Degrau', save_dir)
+
+# Sinal senoidal
+parametros_senoidal = {'amplitude': 1.0, 'periodo': 1.0, 'offset': 0.0}
+tempo, ref, saida, controle = simular_sistema_malha_fechada(
+    connected_systems_model, gbest[0], gbest[1], gbest[2], 'senoidal', parametros_senoidal, a, k, ts_ms, tf_simulacao, dt)
+visualizar_resultados(tempo, ref, saida, controle, 'Senoidal', save_dir)
+
+# Sinal onda quadrada
+parametros_quadrada = {'amplitude': 1.0, 'periodo': 1.0, 'offset': 0.0}
+tempo, ref, saida, controle = simular_sistema_malha_fechada(
+    connected_systems_model, gbest[0], gbest[1], gbest[2], 'quadrada', parametros_quadrada, a, k, ts_ms, tf_simulacao, dt)
+visualizar_resultados(tempo, ref, saida, controle, 'Quadrada', save_dir)
+
+# Sinal dente de serra
+parametros_dente_serra = {'amplitude': 1.0, 'periodo': 1.0, 'offset': 0.0}
+tempo, ref, saida, controle = simular_sistema_malha_fechada(
+    connected_systems_model, gbest[0], gbest[1], gbest[2], 'dente_serra', parametros_dente_serra, a, k, ts_ms, tf_simulacao, dt)
+visualizar_resultados(tempo, ref, saida, controle, 'Dente de Serra', save_dir)
+
+# Sinal aleatório
+parametros_aleatorio = {'amp_max': 1.0, 'amp_min': -1.0, 'periodo_max': 0.5, 'periodo_min': 0.1}
+tempo, ref, saida, controle = simular_sistema_malha_fechada(
+    connected_systems_model, gbest[0], gbest[1], gbest[2], 'aleatorio', parametros_aleatorio, a, k, ts_ms, tf_simulacao, dt)
+visualizar_resultados(tempo, ref, saida, controle, 'Aleatório', save_dir)
