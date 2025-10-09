@@ -1,6 +1,6 @@
 import numpy as np
-import numpy as np
-from input.perfil_terreno import get_declive
+from input.perfil_terreno import get_declive 
+from controlador_fuzzy import get_controle_fuzzy
 
 setores = [
     {"nome": "A", "umidade": 0.30, "capacidade": 0.45, "perda": 2.0/3600, "tipo": "Argiloso", "area_ha": 11.31},
@@ -45,6 +45,7 @@ def ler_sensor_pressao(pressao_real):
     ruido = np.random.normal(0, 0.1)
     return max(0.0, pressao_real + ruido)
 
+# --- FUNÇÃO ANTIGA (NÃO SERÁ MAIS USADA DIRETAMENTE) ---
 def controle_crisp(umidade_sensor, capacidade):
     x = umidade_sensor / capacidade
     return max(0.1, min(1.0, 1.2 - x*1.5))
@@ -141,22 +142,41 @@ def atualizar_estado(estado, setores, obstaculos, parametros):
     taxa_perda = setor_atual["perda"] * fator_temp * vento * radiacao
     setor_atual["umidade"] -= taxa_perda * setor_atual["umidade"] * dt_real / 3600
     
-    # add - se tem chuva nao ligar pivo
     chuva = np.random.binomial(1, 0.01)
     if chuva:
         for setor in setores:
             setor["umidade"] = min(setor["capacidade"], setor["umidade"] + 0.01)
 
-    umidade_sensor = ler_sensor_umidade(setor_atual["umidade"])
-    fator_controle = controle_crisp(umidade_sensor, setor_atual["capacidade"])
 
+    # fzzz
+    
+
+    umidade_sensor = ler_sensor_umidade(setor_atual["umidade"])
+    
+
+    erro_umidade_atual = setor_atual['capacidade'] - umidade_sensor
+
+    
+    fator_temp_clima = np.interp(temperatura_ambiente, [5, 40], [0, 4]) 
+    fator_vento_clima = np.interp(vento, [0, 50], [0, 3])
+    fator_radiacao_clima = np.interp(radiacao, [0, 1000], [0, 3]) 
+    fator_clima_atual = fator_temp_clima + fator_vento_clima + fator_radiacao_clima
+    
+    
+    percentual_vazao_desejada = get_controle_fuzzy(erro_umidade_atual, fator_clima_atual)
+    
+    
+    fator_controle = percentual_vazao_desejada / 100.0
+    
     umidade_media = np.mean([s["umidade"] for s in setores])
     modo_emergencia = umidade_media < 0.20
 
     if modo_emergencia:
         pressao_desejada = pressao_bomba_max
+        fator_controle = 1.0
     else:
         pressao_desejada = calcular_pressao_necessaria(fator_controle, pressao_bomba_max)
+
 
     erro_pressao = pressao_desejada - pressao_atual
     pressao_atual += erro_pressao * 0.1
