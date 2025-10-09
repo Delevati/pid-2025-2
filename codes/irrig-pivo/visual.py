@@ -58,7 +58,6 @@ def atualizar_visual(elementos, setores, estado, parametros):
     ang_atual = estado["ang_atual"]
     posicoes_aspersores = estado["posicoes_aspersores"]
     vazoes_aspersores = estado["vazoes_aspersores"]
-    obstaculo_extra = estado["obstaculo_extra"]
     ang_rad = np.deg2rad(ang_atual)
     x_arm = [0, 1.2*np.cos(ang_rad)]
     y_arm = [0, 1.2*np.sin(ang_rad)]
@@ -140,7 +139,6 @@ def atualizar_visual(elementos, setores, estado, parametros):
         f"Consumo total:{estado['consumo_agua_total']:8.0f} L\n"
         f"Umidade média:{estado['umidade_media']:6.1%}\n"
         f"{'EMERGÊNCIA' if estado['modo_emergencia'] else 'NORMAL'}\n"
-        f"{'OBSTÁCULO' if obstaculo_extra > 0 else ''}"
     )
 
     estados_motores = estado.get("estados_motores", [])
