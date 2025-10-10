@@ -1,6 +1,7 @@
 import numpy as np
 import numpy as np
 from input.perfil_terreno import get_declive
+from controlador_fuzzy import get_controle_fuzzy
 
 setores = [
     {"nome": "A", "umidade": 0.30, "capacidade": 0.45, "perda": 2.0/3600, "tipo": "Argiloso", "area_ha": 11.31},
@@ -150,13 +151,15 @@ def atualizar_estado(estado, setores, obstaculos, parametros):
     umidade_sensor = ler_sensor_umidade(setor_atual["umidade"])
     fator_controle = controle_crisp(umidade_sensor, setor_atual["capacidade"])
 
+    erro_umidade_atual = setor_atual['capacidade'] - umidade_sensor
+
     umidade_media = np.mean([s["umidade"] for s in setores])
     modo_emergencia = umidade_media < 0.20
 
     if modo_emergencia:
         pressao_desejada = pressao_bomba_max
     else:
-        pressao_desejada = calcular_pressao_necessaria(fator_controle, pressao_bomba_max)
+        pressao_desejada = calcular_pressao_necessaria(pressao_bomba_max)
 
     erro_pressao = pressao_desejada - pressao_atual
     pressao_atual += erro_pressao * 0.1
