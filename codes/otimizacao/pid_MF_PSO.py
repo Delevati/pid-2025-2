@@ -6,13 +6,6 @@ from utils import simular_sistema_malha_fechada, visualizar_resultados
 
 """
 Sistema de Controle PID com Otimização para k_p, k_i e k_d por Enxame de Partículas (PSO)
-
-O código simula um modelo do motor, com controlador e simulações para avaliar a diferença 
-entre a saída do sistema e a referência desejada.
-
-Nota: A função objetivo atualmente tá implementada com a saída ITA (Integral Time Absolute Error) 
-e ITE (Integral Time Error), não usei Goodhart porque já tava com essas métricas prontas na função. 
-TO DO: Precisa trocar ITA e ITE para aplicar o goodhart aqui.
 """
 save_dir = '/Users/luryand/Documents/PID2024-2/codes/otimizacao/plots'
 
@@ -27,9 +20,9 @@ dt = ts_ms/1000.0
 
 n_part = 30
 max_iter = 30
-lim = [(0.01, 100.0),    # kp: ganho proporcional
-       (0.0, 50.0),      # ki: ganho integral  
-       (0.0, 10.0)]      # kd: ganho derivativo
+lim = [(1.0, 50.0),      # kp: ganho proporcional
+       (0.0, 20.0),      # ki: ganho integral  
+       (0.5, 10.0)]      # kd: ganho derivativo
 
 peso_inercia = 0.9
 peso_local = 1.2
@@ -87,7 +80,7 @@ def calcular_funcao_objetivo(kp, ki, kd):
         erro_acum = (erro_atual + erro_anterior) * dt
         d_erro = (erro_atual - erro_anterior) / dt
 
-        v = kp * erro_atual + ki * erro_acum + kd * d_erro
+        v = kp * erro_atual + ki * ts_ms * erro_acum + kd * d_erro
         control_effort += abs(v) * dt
         
         out_states = odeint(connected_systems_model, states[i], t_span,
@@ -111,6 +104,9 @@ def calcular_funcao_objetivo(kp, ki, kd):
     # Penaliza kp muito baixo em relação ao ki
     if kp < ki * 0.2:
         balance_penalty += (ki * 0.2 - kp) * 0.01
+    # Penaliza ki muito baixo (malha fechada precisa de integral!)
+    if ki < 1.0:
+        balance_penalty += (2.0 - ki) * 2.0
     # Penaliza ki muito alto, é chamado de windup
     if ki > 50:
         balance_penalty += (ki - 50) * 0.05

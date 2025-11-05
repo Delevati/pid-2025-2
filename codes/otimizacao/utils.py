@@ -103,6 +103,46 @@ def simular_sistema_malha_fechada(connected_systems_model, kp, ki, kd, tipo_sina
     
     return time_vector, torque_ref, states[:, 0], control_signals
 
+def simular_sistema_malha_aberta(connected_systems_model, kp, ki, kd, tipo_sinal, parametros_sinal, a, k, ts_ms, tf, dt):
+    n = int((1 / (ts_ms / 1000.0)) * tf + 1)
+    time_vector = np.linspace(0, tf, n)
+    
+    torque_ref = gerar_sinal_referencia(tipo_sinal, time_vector, parametros_sinal)
+    
+    states = np.zeros((n, 1))
+    states[0] = [0]
+    erro_acum = 0
+    control_signals = np.zeros(n)
+    
+    for i in range(n-1):
+        t_span = [time_vector[i], time_vector[i+1]]
+        tau_ref_i = torque_ref[i]
+        
+        if i < n-2:
+            taup_ref_i = (torque_ref[i+1] - torque_ref[i]) / (time_vector[i+1] - time_vector[i])
+        else:
+            taup_ref_i = 0
+        
+        # MALHA ABERTA: acumula a referência e não o erro como a fechada, anterior
+        erro_acum += tau_ref_i * dt
+        d_erro = taup_ref_i  # Usa derivada da referência taup_ref_i
+        
+        v = kp * tau_ref_i + ki * ts_ms * erro_acum + kd * d_erro / ts_ms
+        control_signals[i] = v
+        
+        if abs(v) > 12.0:
+            v = np.sign(v) * 12.0
+            control_signals[i] = v
+        
+        out_states = odeint(connected_systems_model, states[i], t_span,
+                          args=(tau_ref_i, taup_ref_i, erro_acum, d_erro, kp, ki, kd))
+        states[i+1] = out_states[-1]
+    
+    v = kp * torque_ref[-1] + ki * ts_ms * erro_acum + kd * d_erro / ts_ms
+    control_signals[-1] = v if abs(v) <= 12.0 else np.sign(v) * 12.0
+    
+    return time_vector, torque_ref, states[:, 0], control_signals
+
 def visualizar_resultados(time_vector, reference, output, control_signal, tipo_sinal, save_dir=None):
     plt.figure(figsize=(12, 8))
     
