@@ -38,9 +38,17 @@ def calcular_funcao_objetivo(kp, ki, kd):
         erro = torque_ref - y
         erro_quad = np.mean(erro**2)
         
-        penalizacao_kd = 10.0 if kd < 0.1 else 0.0
+        penalizacao_kp = 30.0 if kp < 0.5 else 0.0
+        penalizacao_kd = 50.0 if kd < 0.5 else 0.0
         
-        return erro_quad + penalizacao_kd
+        erro_max = np.max(np.abs(erro))
+        penalizacao_overshoot = 2.0 * erro_max if erro_max > 1.2 else 0.0
+        
+        penalizacao_total = (penalizacao_kd + 
+                            penalizacao_kp +
+                    penalizacao_overshoot)
+
+        return erro_quad + penalizacao_total
     except:
         return float('inf')
 
