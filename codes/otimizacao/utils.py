@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 from scipy.integrate import odeint
+from scipy import signal
 
 def gerar_sinal_referencia(tipo_sinal, tempo, parametros):
     if tipo_sinal == 'degrau':
@@ -142,6 +143,39 @@ def simular_sistema_malha_aberta(connected_systems_model, kp, ki, kd, tipo_sinal
     control_signals[-1] = v if abs(v) <= 12.0 else np.sign(v) * 12.0
     
     return time_vector, torque_ref, states[:, 0], control_signals
+
+def simular_sistema_funcao_transferencia(kp, ki, kd, tipo_sinal, parametros_sinal, ts_ms, tf, dt):
+    n = int((1 / (ts_ms / 1000.0)) * tf + 1)
+    time_vector = np.linspace(0, tf, n)
+    
+    torque_ref = gerar_sinal_referencia(tipo_sinal, time_vector, parametros_sinal)
+    
+    y = np.zeros_like(time_vector)
+    control_signal = np.zeros_like(time_vector)
+    erro_acum = 0
+    erro_anterior = 0
+    
+    num_planta = [-0.3183, 1]
+    den_planta = [0.1013, 0.0318, 1]
+    H = signal.TransferFunction(num_planta, den_planta)
+    
+    _, y_step = signal.step(H)
+    ganho_dc = y_step[-1]
+    
+    for i in range(1, len(time_vector)):
+        erro = torque_ref[i-1] - y[i-1]
+        erro_acum += erro * dt
+        d_erro = (erro - erro_anterior) / dt
+        
+        u = kp * erro + ki * erro_acum + kd * d_erro
+        u = np.clip(u, -12.0, 12.0)
+        control_signal[i] = u
+        
+        y[i] = ganho_dc * u
+        
+        erro_anterior = erro
+    
+    return time_vector, torque_ref, y, control_signal
 
 def visualizar_resultados(time_vector, reference, output, control_signal, tipo_sinal, save_dir=None):
     plt.figure(figsize=(12, 8))

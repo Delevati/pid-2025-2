@@ -63,7 +63,7 @@ def connected_systems_model(states, t, tau_ref, taup_ref, erro_acum, d_erro, k_p
 def calcular_funcao_objetivo(kp, ki, kd):
     """
     Função Objetivo da MALHA ABERTA
-    A diferença principal é que acumulamos só o tau_ref_i (referência) e não acrescentamos mais o erro da saída. 
+    A diferença principal é que acumulamos só o tau_ref_i (referência) e não acrescentamos mais o erro da saída.
     """
     n = int((1 / (ts_ms / 1000.0)) * tf + 1)
     time_vector = np.linspace(0, tf, n)
