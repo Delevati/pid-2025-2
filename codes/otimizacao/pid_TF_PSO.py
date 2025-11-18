@@ -4,7 +4,6 @@ import random
 from utils import simular_sistema_funcao_transferencia, visualizar_resultados
 import warnings
 
-
 save_dir = '/Users/luryand/Documents/PID2024-2/codes/otimizacao/plots/plots_funcao_transferencia'
 
 tf = 2.0
@@ -12,7 +11,7 @@ ts_ms = 1
 dt = ts_ms/1000.0
 
 n_part = 30
-max_iter = 30
+max_iter = 60
 lim = [(0.01, 50.0),    # kp
        (0.0, 20.0),     # ki
        (0.0, 10.0)]      # kd
@@ -39,7 +38,7 @@ def calcular_funcao_objetivo(kp, ki, kd):
         erro_quad = np.mean(erro**2)
         
         penalizacao_kp = 30.0 if kp < 0.5 else 0.0
-        penalizacao_kd = 50.0 if kd < 0.5 else 0.0
+        penalizacao_kd = 100.0 if kd < 0.5 else 0.0
         
         erro_max = np.max(np.abs(erro))
         penalizacao_overshoot = 2.0 * erro_max if erro_max > 1.2 else 0.0

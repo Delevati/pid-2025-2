@@ -1,0 +1,626 @@
+\documentclass[11pt]{article}	
+\newcommand{\source}[1]{Fonte: {#1}}
+\usepackage{adjustbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{txfonts}
+\usepackage{wasysym}
+\usepackage[paperheight=29.7cm,paperwidth=21.0cm,left=3.0cm,right=3.0cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{wrapfig,boxedminipage,lipsum}
+\usepackage{ragged2e}
+\usepackage[portuguese]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    literate={á}{{\'a}}1 {ã}{{\~a}}1 {â}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ç}{{\'c}}1 {ó}{{\'o}}1 {ô}{{\'o}}1 {õ}{{\'o}}1,
+}
+	
+\setlength\parindent{0pt}
+\renewcommand{\arraystretch}{1.3}\pagestyle{fancy}
+\fancyhf{}
+\lhead\thepage{}
+\newenvironment{dedication}
+  {
+   \thispagestyle{empty}% no header and footer
+   \vspace*{5\stretch{3}}% some space at the top 
+   \raggedleft
+   \justifying
+   \leftskip= 6cm
+   \parindent=1cm
+   \itshape             % the text is in italics
+  }
+  {\par % end the paragraph
+   \vspace{\stretch{3}} % space at bottom is three times that at the top
+  }
+
+\begin{document}
+	
+\vspace{1\baselineskip}
+\begin{center}
+\textbf{UNIVERSIDADE FEDERAL DE ALAGOAS}
+\end{center}
+	
+	
+\begin{center}
+\textbf{INSTITUTO DE COMPUTAÇÃO}
+\end{center}
+	
+	
+\begin{center}
+\textbf{PROGRAMA DE PÓS-GRADUAÇÃO EM INFORMÁTICA}
+\end{center}
+	
+	
+\vspace{10\baselineskip}
+\begin{center}
+	{\LARGE 2º Roteiro de Laboratório}
+\end{center}
+	
+	
+\begin{center}
+	{\LARGE \textbf{\MakeUppercase{Otimização de Parâmetros de Controle}
+}}
+\end{center}
+	
+	
+\vspace{8\baselineskip}
+\begin{flushright}
+	Lilian Giselly Pereira Santos :\quad\textit{2025109391}
+\end{flushright}
+\begin{flushright}
+	Pedro Henrique de Brito Nascimento :\quad\textit{}
+\end{flushright}
+\begin{flushright}
+	Matheus Tenório dos Santos :\quad\textit{2025109168}
+\end{flushright}
+\begin{flushright}
+	Luryan Delevati Dorneles :\quad\textit{2025100430}
+\end{flushright}
+
+
+\vspace{12\baselineskip}
+\begin{center}
+	Maceió - AL
+\end{center}
+	
+	
+\begin{center}
+	2025
+\end{center}
+\newpage
+	
+\vspace{1\baselineskip}
+\vspace{8\baselineskip}
+\begin{center}
+	Lilian Giselly Pereira Santos :\quad\textit{2025109391}
+\end{center}
+\begin{center}
+	Pedro Henrique de Brito Nascimento :\quad\textit{}
+\end{center}
+\begin{center}
+	Matheus Tenório dos Santos :\quad\textit{2025109168}
+\end{center}
+\begin{center}
+    Luryan Delevati Dorneles :\quad\textit{2025100430}
+\end{center}
+
+
+	
+	
+\vspace{10\baselineskip}
+
+\begin{center}
+	{\LARGE \textbf{\MakeUppercase{-}}}
+\end{center}
+
+\begin{dedication}
+Relatório apresentado à disciplina de Sistemas de Controle Inteligente, correspondente à segunda avaliação do semestre 2025.2 do Programa de Pós-Graduação em Informática da Universidade Federal de Alagoas, sob orientação do \textbf{Prof. Glauber Rodrigues Leite} e \textbf{Prof. Ícaro Bezerra Queiroz de Araújo.}
+\end{dedication}
+
+\vspace{2\baselineskip}
+\begin{center}
+	Alagoas - AL
+\end{center}
+\begin{center}
+	2025
+\end{center}
+\newpage
+	
+\section{Objetivos}
+
+Introdução ao ambiente de simulação de sistemas dinâmicos em Python e desenvolvimento de rotinas computacionais para a otimização de
+parâmetros de controladores PID.	
+
+\section{Desenvolvimento}
+
+
+ Desenvolvemos um algoritmo computacional e, utilizando o algoritmo base disponível no Sigaa, realizamos a leitura e escrita de dados do motor elétrico utilizado nas aulas anteriores. Geramos testes para o modelo do motor e para o sistema descrito pelas equações no roteiro de laboratório.
+
+ Para isso, desenvolvemos rotinas que geram os seguintes sinais de entrada e foram aplicados ao motor elétrico e ao sistema da função de transferência, tanto em malha aberta quanto em malha fechada.
+\\
+ \begin{itemize}
+    \item Degrau (Amplitude ou valor);
+    \item Onda senoidal (Período, amplitude e offset);
+    \item Onda quadrada (Período, amplitude e offset);
+    \item Onda dente de serra (Período, amplitude e offset);
+    \item Sinal aleatório (amplitude máxima, amplitude mínima,
+período máximo, período mínimo);
+\end{itemize} 
+
+\section{Comportamento dos Sistemas}
+
+Nesta seção serão apresentados os gráficos obtidos, para cada uma das entradas no sistema para ambos os sistemas. Foram feitos testes em malha aberta e malha fechada com realimentação unitária e com três tipos de controlador sintonizado.
+
+\subsection{Sistema do Motor}
+
+\subsubsection{Resposta às entradas em malha aberta}
+\begin{itemize}
+    \item Degrau;
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.46.58.jpeg}
+    \end{figure}
+    
+    \item Onda senoidal (Período = $1$, amplitude $= 1/2\pi$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.46.58 (1).jpeg}
+    \end{figure}
+    
+    \item Onda quadrada (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.46.57 (1).jpeg}
+    \end{figure}
+    
+    \item Onda dente de serra (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.46.59.jpeg}
+    \end{figure}
+    
+    \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0.5$, período máximo $= 1.5$, período mínimo $= 0.5$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.46.57.jpeg}
+    \end{figure}
+\end{itemize}
+
+\subsubsection{Resposta às entradas em malha fechada com realimentação unitária}
+
+\begin{itemize}
+    \item Degrau;
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.17.21.jpeg}
+    \end{figure}  
+    
+    \item Onda senoidal (Período = $1$, amplitude $= 1/2\pi$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.17.22.jpeg}
+    \end{figure}
+    
+    \item Onda quadrada (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.17.21 (2).jpeg}
+    \end{figure} 
+        
+    \item Onda dente de serra (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.17.22 (1).jpeg}
+    \end{figure}
+    
+    \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0.5$, período máximo $= 1.5$, período mínimo $= 0.5$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.17.21 (1).jpeg}
+    \end{figure}
+\end{itemize}
+
+
+\newline
+
+\subsection{Sistema da Função de Transferência}
+
+\subsubsection{Resposta às entradas em malha aberta}
+\begin{itemize}
+    \item Degrau;
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.44.01.jpeg}
+    \end{figure}
+
+    
+    \item Onda senoidal (Período = $1$, amplitude $= 1/2\pi$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.44.01 (1).jpeg}
+    \end{figure}
+    
+    \item Onda quadrada (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.44.01 (3).jpeg}
+    \end{figure}
+
+    
+    \item Onda dente de serra (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.44.02.jpeg}
+    \end{figure}
+    
+    \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0.5$, período máximo $= 1.5$, período mínimo $= 0.5$);
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 17.44.01 (2).jpeg}
+    \end{figure}
+    
+\end{itemize}
+
+\subsubsection{Resposta às entradas em malha fechada com realimentação unitária}
+
+\begin{itemize}
+    \item Degrau;
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 18.03.51.jpeg}
+    \end{figure}
+    
+    \item Onda senoidal (Período = $1$, amplitude $= 1/2\pi$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 18.03.50 (2).jpeg}
+    \end{figure}
+    
+    \item Onda quadrada (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 18.03.50 (1).jpeg}
+    \end{figure}
+    
+    \item Onda dente de serra (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 18.03.50.jpeg}
+    \end{figure}
+    
+    \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0.5$, período máximo $= 1.5$, período mínimo $= 0.5$);
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 18.03.51 (1).jpeg}
+    \end{figure}
+\end{itemize}
+
+\section{Processos de Otimização}
+    \subsection{Método dos poliedros flexíveis} 
+    Os melhores valores encontrados, foram: 
+    \begin{itemize}
+    \item Após 87 das 100 iterações, para o sistema do motor:
+     Kp = 9824.60, Ki = 0.0002334 e Kd = −0.000170408, resultando no índice IAE: 0.0005.
+    \item Já para o sistema informado pela função de transferência, após 79 iterações, os valores dos ganhos ótimos obtidos foram: Kp = 0.0, Ki = 0.69653336 e Kd = 0.0519009, resultando no índice IAE: 0.2022.
+
+    \end{itemize}
+    
+    \subsubsection{Sistema do motor}
+        \begin{itemize}
+            \item Degrau;
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 16.46.33 (2).jpeg}
+            \end{figure}
+            
+             \item Onda senoidal (Período = $1$, amplitude $= 1/2\pi$ e offset =$ 0$);
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 16.46.33 (1).jpeg}
+            \end{figure}
+
+            \item Onda quadrada (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 16.46.33.jpeg}
+            \end{figure}
+
+            \item Onda dente de serra (Período = $1/2\pi$, amplitude $= 1$ e offset =$ 0$);
+            
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 16.46.33 (3).jpeg}
+            \end{figure}
+            
+             \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0.5$, período máximo $= 1.5$, período mínimo $= 0.5$);
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 16.46.33 (4).jpeg}
+        \end{figure}
+
+
+        
+        \end{itemize}   
+
+
+        \subsubsection{Sistema da função de transferência}
+        \begin{itemize}
+            \item Degrau;
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 19.15.37.jpeg}
+            \end{figure}
+            
+             \item Onda senoidal (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 19.15.38.jpeg}
+            \end{figure}
+            
+            \item Onda quadrada (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 19.15.37 (1).jpeg}
+            \end{figure}
+            
+            \item Onda dente de serra (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 19.15.38 (1).jpeg}
+            \end{figure}
+            
+             \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0$, período máximo $= 2.5\pi$, período mínimo $= 2\pi$);
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{WhatsApp Image 2025-11-10 at 19.15.38 (2).jpeg}
+            \end{figure}
+        \end{itemize}   
+
+        
+    \subsection{Algoritmo genético}
+    Para o algorítimo genético neste problema, um indivíduo é formado por 3 números de ponto flutuante. Cada número corresponde a um ganho do PID. Ou seja, o primeiro número é o $K_p$, o segundo é o $K_i$ e o terceiro é o $K_d$. Cada dígito de um ganho é um gene. Por exemplo, no sistema do motor, cada ganho podia variar de 0.0 até 9999.9. Isso indica que temos 5 genes, 1 para cada dígito. Já para o sistema informado pela função de transferência, temos a variação de $0.0000000001$ até $0.9999999999$, indicando que temos 10 genes.
+
+    Para definir a aptidão de um indivíduo, executamos a simulação do sistema correspondente, com os valores de $K_p$, $K_i$ e $K_d$ do indivíduo, e retornamos o valor de IAE. O tempo total de simulação é de $8\pi$ com o passo de $10^{-2}$. Foi utilizado o método de Euler, como integrador.
+    
+    Em cada geração do algorítimo genético é executado 4 etapas: seleção, cruzamento, mutação e substituição. Para a seleção, utilizamos a estratégia de torneiro de 3 participantes. Nesta estratégia, selecionamos 3 indivíduos aleatórios da população para lutar. O indivíduo com maior aptidão é separado para a próxima etapa (cruzamento). Após isso, fazemos o cruzamento em pares de indivíduos. Cada casal produz 2 filhos da seguinte forma: no primeiro filho, cada gene pode ser recebido ou pelo pai ou pela mãe, com a chance de 50\% para cada um. O segundo filho é gerado como um complemento do primeiro. No cruzamento, não existe promiscuidade, ou seja, cada casal não se relaciona com outro indivíduo na mesma geração. Na etapa de mutação cada ganho ($K_p$, $K_i$ e $K_d$) pode ser incrementado ou decrementado dentro de um range, definido para cada sistema. A chance de mutação foi definida em 75\%. Para o sistema do motor, o range da mutação varia entre $-1.0$ e $1.0$. Já para o sistema informado pela função de transferência, a variação é de $-0.1$ até $0.1$. Por último, é realizado a etapa de substituição. Nesta etapa, mantemos os 30\% melhores indivíduos da geração anterior e adicionamos os novos indivíduos gerados.
+
+    A população em cada geração pode atingir no máximo 1000 indivíduos. Se passar desta quantidade, escolhemos os 1000 indivíduos mais aptos. Caso o valor de IAE retornado seja NaN, isto é, o sistema se tornou instável, filtramos este individuo da população. Esse processo de filtragem é realizada a cada novo conjunto de indivíduo gerado. Isto é, nas etapas de cruzamento e mutação.
+    
+    Os melhores valores encontrados, após 100 gerações, foram, para o sistema do motor: $K_p = 99$, $K_i=100$ e $K_d = 0$, resultando no IAE igual à $0.0031834461$. Já para o sistema informado pela função de transferência, os valores dos ganhos ótimos obtidos foram: $K_p = 0.0290334187$, $K_i=1.0861563683$ e $K_d = 0.1132856607$, resultando no IAE igual à $0.2942368984$.
+
+    \subsubsection{Sistema do motor}
+        \begin{itemize}
+            \item Degrau unitário;
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/motor/plot_step.png}
+                \caption{Degrau no algorítimo genético para o motor}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda senoidal (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+            \newpage
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/motor/plot_sinusoidal.png}
+                \caption{Onda senoidal no algorítimo genético para o motor}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda quadrada (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/motor/plot_square.png}
+                \caption{Onda Quadrada no algorítimo genético para o motor}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda dente de serra (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/motor/plot_sawtooth.png}
+                \caption{Onde dente de serra no algorítimo genético para o motor}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0$,
+        período máximo $= 2.5\pi$, período mínimo $= 2\pi$);
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/motor/plot_random.png}
+                \caption{Sinal aleatório no algorítimo genético para o motor}
+                \label{fig:placeholder}
+            \end{figure}
+        \end{itemize}
+
+    \subsubsection{Sistema da função de transferência}
+        \begin{itemize}
+            \item Degrau unitário;
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/tf/plot_step.png}
+                \caption{Degrau no algorítimo genético para a função de transferência}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda senoidal (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+            \newpage
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/tf/plot_sinusoidal.png}
+                \caption{Onda senoidal no algorítimo genético para a função de transferência}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda quadrada (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/tf/plot_square.png}
+                \caption{Onda Quadrada no algorítimo genético para a função de transferência}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda dente de serra (Período = $2\pi$, amplitude $= 1$ e offset =$ 0$);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/tf/plot_sawtooth.png}
+                \caption{Onde dente de serra no algorítimo genético para a função de transferência}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Sinal aleatório (amplitude máxima $= 1$, amplitude mínima $= 0$,
+        período máximo $= 2.5\pi$, período mínimo $= 2\pi$);
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{genetic/tf/plot_random.png}
+                \caption{Sinal aleatório no algorítimo genético para a função de transferência}
+                \label{fig:placeholder}
+            \end{figure}
+        \end{itemize}
+
+        
+    \subsection{Otimização por enxame de partículas} 
+        \subsubsection{Sistema do motor}
+       \begin{itemize}
+            \item Degrau (Amplitude ou valor);
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda senoidal (Período, amplitude e offset);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda quadrada (Período, amplitude e offset);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda dente de serra (Período, amplitude e offset);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Sinal aleatório (amplitude máxima, amplitude mínima,
+        período máximo, período mínimo);
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+        \end{itemize}   
+
+    \subsubsection{Sistema da função de transferência}
+    
+    \begin{itemize}
+            \item Degrau (Amplitude ou valor);
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda senoidal (Período, amplitude e offset);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda quadrada (Período, amplitude e offset);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Onda dente de serra (Período, amplitude e offset);
+             \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+            \item Sinal aleatório (amplitude máxima, amplitude mínima,
+        período máximo, período mínimo);
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.5\linewidth]{placeholder.png}
+                \caption{Placeholder}
+                \label{fig:placeholder}
+            \end{figure}
+        \end{itemize}   
+
+\vspace{2\baselineskip}
+
+\newpage
+\end{document}
